@@ -1,139 +1,151 @@
-var userObj = {
-  firstName: 'Ivan',
-  lastName: 'Ivanov',
-  age: 35
+var counter = function() {
+  var n = 0;
+
+  return function (number) {
+    n = number === undefined ? n : number;
+
+    return n++;
+  };
+
+}();
+
+console.log(counter());
+console.log(counter());
+console.log(counter());
+console.log(counter());
+console.log(counter());
+console.log(counter(50));
+console.log(counter());
+console.log(counter());
+console.log(counter());
+console.log(counter());
+console.log(counter());
+
+var counting = function() {
+  var n = 0;
+
+  return {
+    value(number) {
+      if (number !== undefined) n = number;
+
+      return n;
+    },
+
+    increment() {
+      n++;
+    },
+
+    decrement() {
+      n--;
+    }
+  };
+}();
+
+console.log(counting.value());
+counting.increment();
+counting.increment();
+console.log(counting.value()); 
+counting.decrement();
+counting.decrement();
+console.log(counting.value()); 
+console.log(counting.value(10)); 
+counting.decrement();
+console.log(counting.value());
+console.log(counting.value(50));
+counting.increment();
+console.log(counting.value()); 
+
+let myPrint = function (a, b, res) {
+  return `${a}^${b}=${res}`;
+}
+
+let myPow = function (a, b, callback) {
+  
+    let pow = function (x, n) {
+      if (n !== 1) return x *= pow(x, n - 1);
+        return x;
+    };
+  
+    return callback(a, b, pow(a, b));
+  };
+
+
+console.log(myPow(3, 4, myPrint)); 
+console.log(myPow(2, 3, myPrint)); 
+
+function fullInfo() {
+  return `${this.name} ${this.model}, ${this.engine}cc, year ${this.year}, ${this.used}`;
+}
+
+let yearNow = new Date().getFullYear();
+let car = {
+  engine: 2000,
+  model: 'Lacetti',
+  name: 'Chevrolet',
+  year: 2010,
+  info: fullInfo,
+  get used() {
+    return this.year !== yearNow ? 'used' : 'new';
+  },
+  set used(value) {
+    if (value === 'new' && this.year < yearNow) this.year = yearNow;
+  }
+};
+let car2 = {
+  engine: 5000,
+  model: 'FX50 AWD',
+  name: 'Infinite',
+  year: 2019,
+  info: fullInfo,
+  get used() {
+    return yearNow - this.year ? 'used' : 'new';
+  },
+  set used(value) {
+    if (value === 'new' && this.year < yearNow) this.year = yearNow;
+  }
 };
 
-console.log(userObj)
+console.log(car.info()); 
+car.used = 'new';
+console.log(car.info()); 
+car.used = 'used';
+console.log(car.info()); 
+console.log(car2.info()); 
+car.used = 'used';
+console.log(car2.info()); 
 
-var userObj = {
-  firstName: 'Ivan',
-  lastName: 'Ivanov',
-  age: 35,
-  fullName() {
-    return `${userObj.firstName} ${userObj.lastName}`;
-  }
+
+let list = [1, 13, 52, 38, 16, 9, 23, 125];
+let myMax = (arg) => Math.max.apply(Math, arg);
+
+console.log(myMax(list));
+
+function myMul(a, b) {
+  return a * b;
+}
+
+console.log(myMul(3, 4));
+
+let myDouble = myMul.bind(null, 2); 
+
+console.log(myDouble(2)); 
+console.log(myDouble(3)); 
+console.log(myDouble(4)); 
+
+let myTriple = myMul.bind(null, 3); 
+
+console.log(myTriple(2)); 
+console.log(myTriple(3)); 
+console.log(myTriple(4)); 
+
+let notUniqNums = [1, 1, 2, 3, 4, 5, 6, 7];
+let myUniq = (arr) => {
+  let set = new Set();
+
+  arr.forEach((val) => {
+    set.add(val);
+  });
+
+  return set;
 };
-
-console.log(userObj.fullName());
-
-function defUpperStr(string) {
-  return (string || 'Default text').toUpperCase();
-}
-
-console.log(defUpperStr('My text'));
-console.log(defUpperStr());
-
-function evenFn(n) {
-  var arr = [];
-  for (var i = 1; i <= n; i++) if (i % 2 === 0) arr.push(i);
-  return arr;
-}
-
-console.log(evenFn(10));
-console.log(evenFn(15));
-console.log(evenFn(20));
-
-function weekFn(n) {
-  var str = '';
-
-  switch (n) {
-    case 1: str = 'Понедельник'; break;
-    case 2: str = 'Вторник'; break;
-    case 3: str = 'Среда'; break;
-    case 4: str = 'Четверг'; break;
-    case 5: str = 'Пятница'; break;
-    case 6: str = 'Суббота'; break;
-    case 7: str = 'Воскресенье'; break;
-    default: str = null;
-  }
-
-  return str;
-}
-
-  console.log(weekFn(1));
-  console.log(weekFn(3));
-  console.log(weekFn(7));
-  console.log(weekFn(9));
-  console.log(weekFn(1.5));
-  console.log(weekFn('2'));
-
-  function ageClassification(n) {
-   return n < 0 ? null :
-
-   n <= 24 ? 'детский возраст' : 
-   n <= 44 ? 'молодой возраст' :
-   n <= 65 ? 'средний возраст' :
-   n <= 75 ? 'пожилой возраст' :
-   n <= 90 ? 'старческий возраст' :
-   n <= 122 ? 'долгожители' :
-   null;
-  }
-
-  console.log('-1 :', ageClassification(-1));
-
-  console.log('5 :', ageClassification(5));
-
-  console.log('34 :', ageClassification(34)); 
-
-  console.log('50 :', ageClassification(50)); 
-
-  console.log('65.1 :', ageClassification(65.1)); 
-
-  console.log('80 :', ageClassification(80)); 
-
-  console.log('110 :', ageClassification(110)); 
-
-  console.log('130 :', ageClassification(130)); 
-
-  console.log(1, ageClassification(-1) === null);
-  console.log(2, ageClassification(1) === 'детский возраст');
-  console.log(3, ageClassification(24) === 'детский возраст');
-  console.log(4, ageClassification(24.01) === 'молодой возраст');
-  console.log(5, ageClassification(44) === 'молодой возраст');
-  console.log(6, ageClassification(44.01) === 'средний возраст');
-  console.log(7, ageClassification(65) === 'средний возраст');
-  console.log(8, ageClassification(65.01) === 'пожилой возраст');
-  console.log(9, ageClassification(75) === 'пожилой возраст');
-  console.log(10, ageClassification(75.01) === 'старческий возраст');
-  console.log(11, ageClassification(90) === 'старческий возраст');
-  console.log(12, ageClassification(90.01) === 'долгожители');
-  console.log(13, ageClassification(122) === 'долгожители');
-  console.log(14, ageClassification(122.01) === null);
-  console.log(15, ageClassification(150) === null);
-  
-
-  function oddFn(n) {
-    var arr = [];
-    var i = 0;
-  
-    while (i++ < n) if (i % 2 !== 0) arr.push(i);
-    return arr;
-  }
-  
-  console.log(oddFn(10));
-  console.log(oddFn(15));
-  console.log(oddFn(20));
-
-  function mainFunc(a, b, func) {
-    if (func && typeof func === 'function') return func(a, b);
-
-    return false;
-  }
-
-  function cbRandom(a, b) {
-    return Math.floor(Math.random() * (b - a + 1)) + a;
-  }
-
-  function cbPow(a, b) {
-    return Math.pow(a, b);
-  }
-
-  function cbAdd(a, b) {
-    return a + b;
-  }
-
-  console.log(mainFunc(2, 5, cbRandom));
-  console.log(mainFunc(2, 5, cbPow));
-  console.log(mainFunc(2, 5, cbAdd));
-  console.log(mainFunc(2, 5, 'not a func'));
+console.log(myUniq(notUniqNums))
