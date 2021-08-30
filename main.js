@@ -1,109 +1,129 @@
-var counter = function() {
-  var n = 0;
+let myLongStr = 'Lorem ipsum dolor sit amet consectetur adipisicing elit;.! Tempora nisi, totam ducimus: deserunt a recusandae?.'
 
-  return function (number) {
-    n = number === undefined ? n : number;
+let wordsList = (str, subStr) => {
+  let reg = new RegExp('\\.|,|\\?|!|:|;|"', 'gui');
+  let arr = str
+    .replace(reg, '')
+    .toLowerCase()
+    .split(' ')
+    .filter((arrItem) => arrItem.indexOf(subStr) > -1);
+  let res = new Set();
 
-    return n++;
-  };
+  arr.forEach((arrItem) => {
+    res.add(arrItem);
+  });
 
-}();
+  return res;
+};
 
-console.log(counter());
-console.log(counter());
-console.log(counter());
-console.log(counter());
-console.log(counter());
-console.log(counter(50));
-console.log(counter());
-console.log(counter());
-console.log(counter());
-console.log(counter());
-console.log(counter());
+console.log(wordsList(myLongStr, 'lor')); 
+console.log(wordsList(myLongStr, 'am')); 
+console.log(wordsList(myLongStr, 'el')); 
 
-var counting = function() {
-  var n = 0;
+let myDate = new Date();
+let getLocalDate = (date, isSeconds = false, isISO = false) => {
+  const reg = new RegExp(':\\d{2}$', 'gui');
+  let res;
 
-  return {
-    value(number) {
-      if (number !== undefined) n = number;
+  if (!isISO) res = isSeconds
+    ? date.toLocaleString()
+    : date.toLocaleString().replace(reg, '');
+  else {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1 < 9 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+    const day = date.getDate() < 9 ? `0${date.getDate()}` : date.getDate();
+    const hour = date.getHours() < 9 ? `0${date.getHours()}` : date.getHours();
+    const minutes = date.getMinutes() < 9 ? `0${date.getMinutes()}` : date.getMinutes();
+    const seconds = date.getSeconds() < 9 ? `0${date.getSeconds()}` : date.getSeconds();
 
-      return n;
+    res = isSeconds
+      ? `${year}-${month}-${day}, ${hour}:${minutes}:${seconds}`
+      : `${year}-${month}-${day}, ${hour}:${minutes}`;
+  }
+
+  return res;
+};
+
+console.log(getLocalDate(myDate));
+console.log(getLocalDate(myDate, true)); 
+console.log(getLocalDate(myDate, false, true)); 
+console.log(getLocalDate(myDate, true, true)); 
+console.log(getLocalDate(new Date(123456))); 
+console.log(getLocalDate(new Date(123456), true)); 
+console.log(getLocalDate(new Date(123456), false, true)); 
+console.log(getLocalDate(new Date(123456), true, true)); 
+
+let getWeekDay = (d) => {
+	const date = new Date(d);
+  const days = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
+
+  return days[date.getDay()];
+}
+
+console.log(getWeekDay('2019-01-30')); 
+console.log(getWeekDay('2019-07-16')); 
+console.log(getWeekDay('2019-07-27')); 
+
+let getLocalDay = (d) => {
+	const date = new Date(d);
+  let day = date.getDay();
+
+  if (day == 0) {
+    day = 7;
+  }
+
+  return day;
+}
+
+console.log(getLocalDay('2021-08-30'));
+console.log(getLocalDay('2021-08-31'));
+
+let formatter = new Intl.DateTimeFormat("uk-UA", {
+  year: "numeric",
+  month: "long",
+  day: "numeric"
+});
+
+let getDateAgo = (d, days) => {
+  const date = new Date(d);
+
+  date.setDate(date.getDate() - days);
+  
+  return date.toLocaleString().replace(/(\d.*),\s+(\d.*)/gu, '$1');
+};
+
+console.log(getDateAgo('2021-08-30', 1)); 
+console.log(getDateAgo('2021-08-30', 2)); 
+console.log(getDateAgo('2021-08-30', 365)); 
+
+let Car = function (engine, model, name, year) {
+  this.engine = engine;
+  this.model = model;
+  this.name = name;
+  this.year = year;
+};
+
+Object.defineProperties(Car.prototype, {
+  used: {
+    get () {
+      const yearNow = new Date().getFullYear();
+
+      return yearNow - this.year > 1 ? 'used' : 'new';
     },
+    set(value) {
+      const yearNow = new Date().getFullYear();
 
-    increment() {
-      n++;
-    },
-
-    decrement() {
-      n--;
+      if (value === 'new' && this.year < yearNow) this.year = yearNow;
     }
-  };
-}();
+  }
+});
 
-console.log(counting.value());
-counting.increment();
-counting.increment();
-console.log(counting.value()); 
-counting.decrement();
-counting.decrement();
-console.log(counting.value()); 
-console.log(counting.value(10)); 
-counting.decrement();
-console.log(counting.value());
-console.log(counting.value(50));
-counting.increment();
-console.log(counting.value()); 
-
-let myPrint = function (a, b, res) {
-  return `${a}^${b}=${res}`;
-}
-
-let myPow = function (a, b, callback) {
-  
-    let pow = function (x, n) {
-      if (n !== 1) return x *= pow(x, n - 1);
-        return x;
-    };
-  
-    return callback(a, b, pow(a, b));
-  };
-
-
-console.log(myPow(3, 4, myPrint)); 
-console.log(myPow(2, 3, myPrint)); 
-
-function fullInfo() {
+Car.prototype.info = function () {
   return `${this.name} ${this.model}, ${this.engine}cc, year ${this.year}, ${this.used}`;
-}
+};
 
-let yearNow = new Date().getFullYear();
-let car = {
-  engine: 2000,
-  model: 'Lacetti',
-  name: 'Chevrolet',
-  year: 2010,
-  info: fullInfo,
-  get used() {
-    return this.year !== yearNow ? 'used' : 'new';
-  },
-  set used(value) {
-    if (value === 'new' && this.year < yearNow) this.year = yearNow;
-  }
-};
-let car2 = {
-  engine: 5000,
-  model: 'FX50 AWD',
-  name: 'Infinite',
-  year: 2019,
-  info: fullInfo,
-  get used() {
-    return yearNow - this.year ? 'used' : 'new';
-  },
-  set used(value) {
-    if (value === 'new' && this.year < yearNow) this.year = yearNow;
-  }
-};
+let car = new Car(2000, 'Lacetti', 'Chevrolet', 2010);
+let car2 = new Car(5000, 'FX50 AWD', 'Infinite', 2019);
 
 console.log(car.info()); 
 car.used = 'new';
@@ -115,37 +135,32 @@ car.used = 'used';
 console.log(car2.info()); 
 
 
-let list = [1, 13, 52, 38, 16, 9, 23, 125];
-let myMax = (arg) => Math.max.apply(Math, arg);
+let testPerformance = (iterations, func) => {
+  let time = Date.now();
 
-console.log(myMax(list));
+  if (typeof func === 'function') for (let i = iterations; i--;) func();
 
-function myMul(a, b) {
-  return a * b;
+  return Date.now() - time;
+};
+
+
+function test1() {
+  let str = myLongStr;
+
+  while (str.indexOf('o') !== -1) str = str.replace('o', '');
+  while (str.indexOf('a') !== -1) str = str.replace('a', '');
+  while (str.indexOf('e') !== -1) str = str.replace('e', '');
+  while (str.indexOf('u') !== -1) str = str.replace('u', '');
+  while (str.indexOf('i') !== -1) str = str.replace('i', '');
 }
 
-console.log(myMul(3, 4));
 
-let myDouble = myMul.bind(null, 2); 
+function test2() {
+  const reg = new RegExp('[oaeui]', 'gui');
 
-console.log(myDouble(2)); 
-console.log(myDouble(3)); 
-console.log(myDouble(4)); 
+  myLongStr.replace(reg, '');
+}
 
-let myTriple = myMul.bind(null, 3); 
-
-console.log(myTriple(2)); 
-console.log(myTriple(3)); 
-console.log(myTriple(4)); 
-
-let notUniqNums = [1, 1, 2, 3, 4, 5, 6, 7];
-let myUniq = (arr) => {
-  let set = new Set();
-
-  arr.forEach((val) => {
-    set.add(val);
-  });
-
-  return set;
-};
-console.log(myUniq(notUniqNums))
+console.log(testPerformance(100, test1));
+console.log(testPerformance(100, test2));
+console.log(testPerformance(100, 12345));
