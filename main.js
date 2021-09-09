@@ -1,166 +1,125 @@
-let myLongStr = 'Lorem ipsum dolor sit amet consectetur adipisicing elit;.! Tempora nisi, totam ducimus: deserunt a recusandae?.'
+let container = null;
+let prevIndicator = null;
 
-let wordsList = (str, subStr) => {
-  let reg = new RegExp('\\.|,|\\?|!|:|;|"', 'gui');
-  let arr = str
-    .replace(reg, '')
-    .toLowerCase()
-    .split(' ')
-    .filter((arrItem) => arrItem.indexOf(subStr) > -1);
-  let res = new Set();
+function createContainer() {
+  elem = document.createElement('div');
+  elem.setAttribute('id', 'carousel');
+  elem.setAttribute('class', 'carousel');
 
-  arr.forEach((arrItem) => {
-    res.add(arrItem);
-  });
-
-  return res;
-};
-
-console.log(wordsList(myLongStr, 'lor')); 
-console.log(wordsList(myLongStr, 'am')); 
-console.log(wordsList(myLongStr, 'el')); 
-
-let myDate = new Date();
-let getLocalDate = (date, isSeconds = false, isISO = false) => {
-  const reg = new RegExp(':\\d{2}$', 'gui');
-  let res;
-
-  if (!isISO) res = isSeconds
-    ? date.toLocaleString()
-    : date.toLocaleString().replace(reg, '');
-  else {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1 < 9 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
-    const day = date.getDate() < 9 ? `0${date.getDate()}` : date.getDate();
-    const hour = date.getHours() < 9 ? `0${date.getHours()}` : date.getHours();
-    const minutes = date.getMinutes() < 9 ? `0${date.getMinutes()}` : date.getMinutes();
-    const seconds = date.getSeconds() < 9 ? `0${date.getSeconds()}` : date.getSeconds();
-
-    res = isSeconds
-      ? `${year}-${month}-${day}, ${hour}:${minutes}:${seconds}`
-      : `${year}-${month}-${day}, ${hour}:${minutes}`;
-  }
-
-  return res;
-};
-
-console.log(getLocalDate(myDate));
-console.log(getLocalDate(myDate, true)); 
-console.log(getLocalDate(myDate, false, true)); 
-console.log(getLocalDate(myDate, true, true)); 
-console.log(getLocalDate(new Date(123456))); 
-console.log(getLocalDate(new Date(123456), true)); 
-console.log(getLocalDate(new Date(123456), false, true)); 
-console.log(getLocalDate(new Date(123456), true, true)); 
-
-let getWeekDay = (d) => {
-	const date = new Date(d);
-  const days = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
-
-  return days[date.getDay()];
+  document.querySelector('body').appendChild(elem);
+  container = document.querySelector('#carousel');
 }
 
-console.log(getWeekDay('2019-01-30')); 
-console.log(getWeekDay('2019-07-16')); 
-console.log(getWeekDay('2019-07-27')); 
+function createSlides(n) {
+  slidesContainer = document.createElement('ul');
+  slidesContainer.setAttribute('class', 'slides');
 
-let getLocalDay = (d) => {
-	const date = new Date(d);
-  let day = date.getDay();
+  for (i = 0; i < n; i++) {
+    let slideItem = document.createElement('li');
+    let slideLink = document.createElement('a');
 
-  if (day == 0) {
-    day = 7;
+    slideItem.setAttribute('class', i === 0 ? 'slides__item active' : 'slides__item');
+    slideLink.setAttribute('href', '#');
+    slideItem.appendChild(slideLink);
+    slidesContainer.appendChild(slideItem);
   }
-
-  return day;
+  container.appendChild(slidesContainer);
 }
 
-console.log(getLocalDay('2021-08-30'));
-console.log(getLocalDay('2021-08-31'));
+function createIndicators(n) {
+  indicatorsContainer = document.createElement('div');
+  indicatorsContainer.setAttribute('class', 'indicators');
 
-let formatter = new Intl.DateTimeFormat("uk-UA", {
-  year: "numeric",
-  month: "long",
-  day: "numeric"
-});
+  for (i = 0; i < n; i++) {
+    let indicatorsItem = document.createElement('span');
 
-let getDateAgo = (d, days) => {
-  const date = new Date(d);
+    indicatorsItem.setAttribute('class', i === 0 ? 'indicators__item active' : 'indicators__item');
+    indicatorsItem.setAttribute('data-slide-to', i);
+    indicatorsContainer.appendChild(indicatorsItem);
+  }
 
-  date.setDate(date.getDate() - days);
-  
-  return date.toLocaleString().replace(/(\d.*),\s+(\d.*)/gu, '$1');
-};
+  container.appendChild(indicatorsContainer);
+}
 
-console.log(getDateAgo('2021-08-30', 1)); 
-console.log(getDateAgo('2021-08-30', 2)); 
-console.log(getDateAgo('2021-08-30', 365)); 
+function createControls() {
+  controlsContainer = document.createElement('div');
+  controlsContainer.setAttribute('class', 'controls');
 
-let Car = function (engine, model, name, year) {
-  this.engine = engine;
-  this.model = model;
-  this.name = name;
-  this.year = year;
-};
+  for (i = 0; i < 3; i++) {
+    let controlItem = document.createElement('div');
+    let controlIcon = document.createElement('i');
+    const defItemClass = 'controls__item';
+    const defIconClass = 'fas';
 
-Object.defineProperties(Car.prototype, {
-  used: {
-    get () {
-      const yearNow = new Date().getFullYear();
-
-      return yearNow - this.year > 1 ? 'used' : 'new';
-    },
-    set(value) {
-      const yearNow = new Date().getFullYear();
-
-      if (value === 'new' && this.year < yearNow) this.year = yearNow;
+    switch (i) {
+      case 0:
+        controlItem.setAttribute('class', `${defItemClass} controls__prev`);
+        controlIcon.setAttribute('class', `${defIconClass} fa-chevron-left`);
+        break;
+      case 1:
+        controlItem.setAttribute('class', `${defItemClass} controls__next`);
+        controlIcon.setAttribute('class', `${defIconClass} fa-chevron-right`);
+        break;
+      case 2:
+        controlItem.setAttribute('class', `${defItemClass} controls__pause`);
+        controlIcon.setAttribute('class', `${defIconClass} fa-play`);
+        break;
     }
+    controlItem.appendChild(controlIcon);
+    controlsContainer.appendChild(controlItem);
   }
-});
-
-Car.prototype.info = function () {
-  return `${this.name} ${this.model}, ${this.engine}cc, year ${this.year}, ${this.used}`;
-};
-
-let car = new Car(2000, 'Lacetti', 'Chevrolet', 2010);
-let car2 = new Car(5000, 'FX50 AWD', 'Infinite', 2019);
-
-console.log(car.info()); 
-car.used = 'new';
-console.log(car.info()); 
-car.used = 'used';
-console.log(car.info()); 
-console.log(car2.info()); 
-car.used = 'used';
-console.log(car2.info()); 
-
-
-let testPerformance = (iterations, func) => {
-  let time = Date.now();
-
-  if (typeof func === 'function') for (let i = iterations; i--;) func();
-
-  return Date.now() - time;
-};
-
-
-function test1() {
-  let str = myLongStr;
-
-  while (str.indexOf('o') !== -1) str = str.replace('o', '');
-  while (str.indexOf('a') !== -1) str = str.replace('a', '');
-  while (str.indexOf('e') !== -1) str = str.replace('e', '');
-  while (str.indexOf('u') !== -1) str = str.replace('u', '');
-  while (str.indexOf('i') !== -1) str = str.replace('i', '');
+  container.appendChild(controlsContainer);
 }
 
+function createStyle() {
+  styleContainer = document.createElement('style');
+  let styleCode = `
+    .controls,
+    .slides {
+      position: relative;
+    }
+    .indicators {
+      display: flex;
+    }
+    .indicators__item {
+      display: block;
+      width: 20px;
+      height: 20px;
+      background-color: gray;
+      margin: 5px;
+      border-radius: 10px;
+    }`;
 
-function test2() {
-  const reg = new RegExp('[oaeui]', 'gui');
-
-  myLongStr.replace(reg, '');
+  styleContainer.innerHTML = styleCode;
+  container.appendChild(styleContainer);
 }
 
-console.log(testPerformance(100, test1));
-console.log(testPerformance(100, test2));
-console.log(testPerformance(100, 12345));
+function indicatorsHandler(e) {
+  let target = e.target;
+
+  if (target.classList.contains('indicators__item')) {
+    target.style.backgroundColor = 'red';
+
+    if (prevIndicator !== null) prevIndicator.removeAttribute('style');
+
+    prevIndicator = target;
+  }
+}
+
+function setListener() {
+  let indicatorsContainer = document.querySelector('div.indicators');
+
+  indicatorsContainer.addEventListener('click', indicatorsHandler);
+}
+
+function createCarousel(slidesCount = 5) {
+ 
+  container = document.querySelector('#carousel');
+  createSlides(slidesCount);
+  createIndicators(slidesCount);
+  createControls();
+  createStyle();
+  setListener();
+}
+
+createCarousel();
